@@ -2,6 +2,10 @@ Research:
 - Ruby threads
 - Brief scala intro
 
+Ideas:
+  * cap and lower case of string matching
+  *
+
 
 Objects:
 

@@ -10,7 +10,9 @@ class Message
     @target   = payload_parts[3]
   end
 
-  attr_reader :raw
+  def to_string
+    @raw
+  end
 
   def sequence
     @sequence.to_i

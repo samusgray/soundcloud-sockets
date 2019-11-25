@@ -6,7 +6,7 @@ module Event
 
     def process message
       @client_pool.values.each do |socket|
-        socket.puts(message.raw)
+        socket.puts(message.to_string)
         socket.flush
       end
     end

@@ -12,7 +12,7 @@ module Event
         socket = @client_pool[follower]
 
         if socket
-          socket.puts(message.raw)
+          socket.puts(message.to_string)
           socket.flush
         end
       end

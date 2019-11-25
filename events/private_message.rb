@@ -11,7 +11,7 @@ module Event
     def process message
       socket = @client_pool[message.target]
       if socket
-        socket.puts(message.raw)
+        socket.puts(message.to_string)
         socket.flush
       end
     end
