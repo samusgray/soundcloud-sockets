@@ -1,6 +1,7 @@
 require 'set'
-
 require 'socket'
+
+require_relative 'message'
 require_relative 'events/broadcast'
 require_relative 'events/follow'
 require_relative 'events/private_message'
@@ -24,36 +25,6 @@ EVENT_HANDLERS = Hash.new(Event::Unregistered).merge(
   S: Event::StatusUpdate,
 ).freeze
 
-class Message
-  def initialize payload
-    payload_parts = payload.split('|')
-
-    @raw      = payload_parts
-    @sequence = payload_parts[0]
-    @type     = payload_parts[1]
-    @actor    = payload_parts[2]
-    @target   = payload_parts[3]
-  end
-
-  attr_reader :raw
-
-  def sequence
-    @sequence.to_i
-  end
-
-  def type
-    @type.to_sym
-  end
-
-  def actor
-    @actor.to_i if @actor
-  end
-
-  def target
-    @target.to_i if @target
-  end
-end
-
 thread1 = Thread.new do
 
   puts("Listening for events on #{EVENT_PORT}")
@@ -65,73 +36,20 @@ thread1 = Thread.new do
       event_socket.each_line do |payload|
         message = Message.new(payload)
 
-        seq_no_to_message[message.sequence] = message.raw
+        seq_no_to_message[message.sequence] = message
 
         while seq_no_to_message[last_seq_no + 1]
           next_message = seq_no_to_message[last_seq_no + 1]
-          next_payload = next_message.join('|')
 
-          seq_no = next_message[0].to_i
-          kind = next_message[1].strip
+          event_handler = EVENT_HANDLERS[next_message.kind]
 
-          event_handler  = EVENT_HANDLERS[kind.to_sym]
-          event = event_handler.new()
+          event = event_handler.new(
+            client_pool, follow_registry
+          )
 
-          case event.kind
-          when 'F'
-            from_user_id = next_message[2].to_i
-            to_user_id = next_message[3].to_i
+          event.process(next_message)
 
-            followers = follow_registry[to_user_id] || Set.new
-            followers << from_user_id
-            follow_registry[to_user_id] = followers
-
-            socket = client_pool[to_user_id]
-            if socket
-              socket.puts(next_payload)
-              socket.flush
-            end
-
-          when 'U'
-            from_user_id = next_message[2].to_i
-            to_user_id = next_message[3].to_i
-
-            followers = follow_registry[to_user_id] || Set.new
-            followers.delete(from_user_id)
-            follow_registry[to_user_id] = followers
-
-          when 'P'
-            to_user_id = next_message[3].to_i
-
-            socket = client_pool[to_user_id]
-            if socket
-              socket.puts(next_payload)
-              socket.flush
-            end
-
-          when 'B'
-            puts "kind B:"
-            puts next_payload
-            client_pool.values.each do |socket|
-              # socket.puts(next_payload)
-              socket.flush
-            end
-
-          when 'S'
-            from_user_id = next_message[2].to_i
-
-            followers = follow_registry[from_user_id] || Set.new
-            followers.each do |follower|
-              socket = client_pool[follower]
-
-              if socket
-                socket.puts(next_payload)
-                socket.flush
-              end
-            end
-          end
-
-          last_seq_no = seq_no
+          last_seq_no = next_message.sequence
         end
       end
 

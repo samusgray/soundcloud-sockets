@@ -1,11 +1,26 @@
+require_relative 'base'
+
 module Event
   class Follow
-    def process
-      puts "~~~~follow!"
+    include Event::Base
+
+    def initialize client_pool, follow_registry
+      @client_pool = client_pool
+      @follow_registry = follow_registry
     end
 
-    def kind
-      "F"
+    def process message
+      to_user_id = message.target
+
+      followers = @follow_registry[to_user_id] || Set.new
+      followers << message.actor
+      @follow_registry[to_user_id] = followers
+
+      socket = @client_pool[to_user_id]
+      if socket
+        socket.puts(message.raw)
+        socket.flush
+      end
     end
   end
 end

@@ -1,11 +1,21 @@
+require_relative 'base'
+
 module Event
   class StatusUpdate
-    def process
-      puts "~~~~status update!"
-    end
+    include Event::Base
 
-    def kind
-      "S"
+    def process message
+      from_user_id = message.actor
+
+      followers = @follow_registry[from_user_id] || Set.new
+      followers.each do |follower|
+        socket = @client_pool[follower]
+
+        if socket
+          socket.puts(message.raw)
+          socket.flush
+        end
+      end
     end
   end
 end

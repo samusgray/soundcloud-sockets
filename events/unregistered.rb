@@ -1,11 +1,12 @@
+require_relative 'base'
+
 module Event
   class Unregistered
-    def process
-      puts "~unregistered event~"
-    end
+    include Event::Base
 
-    def kinnd
-      nil
+    def process payload
+      puts "~~~~private message!"
+      puts payload
     end
   end
 end

@@ -1,11 +1,14 @@
+require_relative 'base'
+
 module Event
   class Broadcast
-    def process
-      puts "~~~~broadcast!"
-    end
+    include ::Event::Base
 
-    def kind
-      "B"
+    def process message
+      @client_pool.values.each do |socket|
+        socket.puts(message.raw)
+        socket.flush
+      end
     end
   end
 end
