@@ -4,15 +4,19 @@ module Event
   class StatusUpdate
     include Event::Base
 
-    def process message
-      from_user_id = message.actor
-
-      followers = @follow_registry[from_user_id] || Set.new
-      followers.each do |follower|
-        socket = @client_pool[follower]
+    def dispatch message
+      actor     = message.actor
+      followers = actor.followers
+      puts "actor.id"
+      puts actor.id
+      puts "actor.followers"
+      puts actor.followers
+      followers.each do |follower_id|
+        puts socket
+        socket = @client_pool[follower_id]
 
         if socket
-          socket.puts(message.to_string)
+          socket.puts(message.to_str)
           socket.flush
         end
       end

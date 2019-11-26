@@ -1,3 +1,5 @@
+require_relative 'user'
+
 class Message
   def initialize payload
     payload_parts = payload.split('|')
@@ -6,11 +8,13 @@ class Message
     @raw      = payload
     @sequence = payload_parts[0]
     @kind     = payload_parts[1]
-    @actor    = payload_parts[2]
-    @target   = payload_parts[3]
+    @actor    = User.new(payload_parts[2])
+    @target   = User.new(payload_parts[3])
+
+    puts @raw
   end
 
-  def to_string
+  def to_str
     @raw
   end
 
@@ -23,10 +27,10 @@ class Message
   end
 
   def actor
-    @actor.to_i if @actor
+    @actor
   end
 
   def target
-    @target.to_i if @target
+    @target
   end
 end

@@ -4,14 +4,11 @@ module Event
   class Unfollow
     include Event::Base
 
-    def process message
-      to_user_id = message.target
+    def dispatch message
+      target = message.target
+      actor = message.actor
 
-      followers = @follow_registry[to_user_id] || Set.new
-
-      followers.delete(message.actor)
-
-      @follow_registry[to_user_id] = followers
+      target.unregister_follower(actor)
     end
   end
 end

@@ -1,10 +1,10 @@
 module Event
   module Base
-    def initialize client_pool, follow_registry
-      @client_pool, @follow_registry = client_pool, follow_registry
+    def initialize client_pool
+      @client_pool = client_pool
     end
 
-    def process payload
+    def dispatch message
       raise NotImplementedError
     end
   end

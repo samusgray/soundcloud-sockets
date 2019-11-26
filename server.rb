@@ -2,8 +2,9 @@ class Server
   def initialize
     @client_pool = {}
     @seq_no_to_message = {}
-    @follow_registry = {}
     @last_seq_no = 0
+
+    Thread.abort_on_exception = true
   end
 
   def self.run
@@ -23,6 +24,7 @@ class Server
     thread2 = Thread.new do
       puts("Listening for client requests on #{::APP_CONFIG['CLIENT_PORT']}")
       client_server = TCPServer.open(::APP_CONFIG['CLIENT_PORT'])
+
       loop do
         Thread.fork(client_server.accept) { |socket| client_thread(socket) }
       end
@@ -43,12 +45,9 @@ class Server
 
         event_handler = EVENT_HANDLERS[next_message.kind]
 
-        event = event_handler.new(
-          @client_pool, @follow_registry
-        )
+        event = event_handler.new(@client_pool)
 
-        puts next_message.to_string
-        event.process(next_message)
+        event.dispatch(next_message)
 
         @last_seq_no = next_message.sequence
       end

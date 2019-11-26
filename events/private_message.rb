@@ -4,14 +4,11 @@ module Event
   class PrivateMessage
     include Event::Base
 
-    def initialize client_pool, follow_registry
-      @client_pool = client_pool
-    end
+    def dispatch message
+      socket = @client_pool[message.target.id]
 
-    def process message
-      socket = @client_pool[message.target]
       if socket
-        socket.puts(message.to_string)
+        socket.puts(message.to_str)
         socket.flush
       end
     end

@@ -4,21 +4,15 @@ module Event
   class Follow
     include Event::Base
 
-    def initialize client_pool, follow_registry
-      @client_pool = client_pool
-      @follow_registry = follow_registry
-    end
+    def dispatch message
+      target = message.target
+      actor  = message.actor
 
-    def process message
-      to_user_id = message.target
+      target.register_follower(actor.id)
+      socket = @client_pool[target.id]
 
-      followers = @follow_registry[to_user_id] || Set.new
-      followers << message.actor
-      @follow_registry[to_user_id] = followers
-
-      socket = @client_pool[to_user_id]
       if socket
-        socket.puts(message.to_string)
+        socket.puts(message.to_str)
         socket.flush
       end
     end

@@ -4,9 +4,9 @@ module Event
   class Broadcast
     include ::Event::Base
 
-    def process message
+    def dispatch message
       @client_pool.values.each do |socket|
-        socket.puts(message.to_string)
+        socket.puts(message.to_str)
         socket.flush
       end
     end
