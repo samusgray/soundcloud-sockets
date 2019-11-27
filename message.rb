@@ -10,12 +10,16 @@ class Message
     @target   = payload_parts[3]
   end
 
-  def to_string
+  def to_str
     @raw
   end
 
   def sequence
     @sequence.to_i
+  end
+
+  def next_sequence
+    @sequence.to_i + 1
   end
 
   def kind

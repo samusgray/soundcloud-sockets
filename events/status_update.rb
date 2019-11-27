@@ -5,16 +5,11 @@ module Event
     include Event::Base
 
     def process message
-      from_user_id = message.actor
+      followers = @follow_registry[message.actor] || Set.new
 
-      followers = @follow_registry[from_user_id] || Set.new
       followers.each do |follower|
-        socket = @client_pool[follower]
-
-        if socket
-          socket.puts(message.to_string)
-          socket.flush
-        end
+        puts message.to_str
+        @client_pool.notify follower, message
       end
     end
   end

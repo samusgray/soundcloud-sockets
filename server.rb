@@ -1,9 +1,14 @@
+require_relative 'events_queue'
+require_relative 'client_pool'
+
 class Server
   def initialize
-    @client_pool = {}
     @seq_no_to_message = {}
     @follow_registry = {}
-    @last_seq_no = 0
+
+    @guard_message = Message.new('0|Guard')
+    @events_queue = EventsQueue.new
+    @client_pool = ClientPool.new @events_queue
   end
 
   def self.run
@@ -34,23 +39,17 @@ class Server
 
   def event_thread socket
     socket.each_line do |payload|
-      message = Message.new(payload)
+      @events_queue.add Message.new payload
 
-      @seq_no_to_message[message.sequence] = message
-
-      while @seq_no_to_message[@last_seq_no + 1]
-        next_message = @seq_no_to_message[@last_seq_no + 1]
-
+      while next_message = @events_queue.next_event(@guard_message)
         event_handler = EVENT_HANDLERS[next_message.kind]
 
-        event = event_handler.new(
-          @client_pool, @follow_registry
-        )
+        event = event_handler.new @client_pool, @follow_registry
 
-        puts next_message.to_string
-        event.process(next_message)
+        event.process next_message
 
-        @last_seq_no = next_message.sequence
+        @guard_message = next_message
+        @events_queue.remove next_message
       end
     end
 
@@ -62,7 +61,9 @@ class Server
 
     if user_id_string
       user_id = user_id_string.to_i
-      @client_pool[user_id] = socket
+
+      @client_pool.add user_id, socket
+
       puts("User connected: #{user_id} (#{@client_pool.size} total)")
     end
   end

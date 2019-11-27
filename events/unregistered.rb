@@ -4,9 +4,8 @@ module Event
   class Unregistered
     include Event::Base
 
-    def process payload
-      puts "~~~~private message!"
-      puts payload
+    def process message
+      puts "Unregistered event: #{message.to_str}"
     end
   end
 end

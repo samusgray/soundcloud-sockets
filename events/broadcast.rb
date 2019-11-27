@@ -5,10 +5,7 @@ module Event
     include ::Event::Base
 
     def process message
-      @client_pool.values.each do |socket|
-        socket.puts(message.to_string)
-        socket.flush
-      end
+      @client_pool.broadcast(message)
     end
   end
 end
