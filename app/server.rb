@@ -1,7 +1,9 @@
+require_relative 'models/message'
+require_relative 'models/client_pool'
+require_relative 'models/event_dispatcher'
+
 require_relative 'queues/events_queue'
 require_relative 'queues/dead_letter_queue'
-require_relative 'events/event_dispatcher'
-require_relative 'client_pool'
 
 class Server
   def initialize
@@ -9,6 +11,8 @@ class Server
     @events_queue    = EventsQueue.new
     @dlq             = DLQ.new
     @client_pool     = ClientPool.new @dlq
+
+    Thread.abort_on_exception = true
   end
 
   def self.run

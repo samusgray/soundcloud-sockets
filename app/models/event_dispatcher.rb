@@ -1,10 +1,10 @@
-require_relative '../message'
-require_relative 'broadcast'
-require_relative 'follow'
-require_relative 'private_message'
-require_relative 'status_update'
-require_relative 'unfollow'
-require_relative 'unregistered'
+require_relative 'message'
+require_relative 'events/broadcast'
+require_relative 'events/follow'
+require_relative 'events/private_message'
+require_relative 'events/status_update'
+require_relative 'events/unfollow'
+require_relative 'events/unregistered'
 
 class EventDispatcher
   EVENT_HANDLERS = Hash.new(Event::Unregistered).merge(

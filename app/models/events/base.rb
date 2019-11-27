@@ -4,8 +4,8 @@ module Event
       @client_pool, @follow_registry = client_pool, follow_registry
     end
 
-    def process payload
-      raise NotImplementedError
+    def process message
+      raise NotImplementedError, "Impliment this method in a class that includes Base"
     end
   end
 end
