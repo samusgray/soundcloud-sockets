@@ -42,6 +42,7 @@ class Server
       @events_queue.add Message.new payload
 
       while next_message = @events_queue.next_event(@guard_message)
+
         event_handler = EVENT_HANDLERS[next_message.kind]
 
         event = event_handler.new @client_pool, @follow_registry

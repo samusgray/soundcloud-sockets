@@ -23,7 +23,7 @@ class Message
   end
 
   def kind
-    @kind.to_sym
+    @kind.chomp.to_sym
   end
 
   def actor
