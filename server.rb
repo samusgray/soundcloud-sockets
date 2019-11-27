@@ -3,12 +3,10 @@ require_relative 'client_pool'
 
 class Server
   def initialize
-    @seq_no_to_message = {}
     @follow_registry = {}
-
-    @guard_message = Message.new('0|Guard')
-    @events_queue = EventsQueue.new
-    @client_pool = ClientPool.new @events_queue
+    @guard_message   = Message.new '0|Guard'
+    @events_queue    = EventsQueue.new
+    @client_pool     = ClientPool.new @events_queue
   end
 
   def self.run
@@ -17,8 +15,8 @@ class Server
 
   def run
     thread1 = Thread.new do
-      puts("Listening for events on #{::APP_CONFIG['EVENT_PORT']}")
-      client_server = TCPServer.open(::APP_CONFIG['EVENT_PORT'])
+      puts "Listening for events on #{::APP_CONFIG['EVENT_PORT']}"
+      client_server = TCPServer.open ::APP_CONFIG['EVENT_PORT']
 
       loop do
         Thread.fork(client_server.accept) { |socket| event_thread(socket) }
@@ -26,8 +24,9 @@ class Server
     end
 
     thread2 = Thread.new do
-      puts("Listening for client requests on #{::APP_CONFIG['CLIENT_PORT']}")
-      client_server = TCPServer.open(::APP_CONFIG['CLIENT_PORT'])
+      puts "Listening for client requests on #{::APP_CONFIG['CLIENT_PORT']}"
+      client_server = TCPServer.open ::APP_CONFIG['CLIENT_PORT']
+
       loop do
         Thread.fork(client_server.accept) { |socket| client_thread(socket) }
       end
@@ -40,18 +39,16 @@ class Server
   def event_thread socket
     socket.each_line do |payload|
       @events_queue.add Message.new payload
+    end
 
-      while next_message = @events_queue.next_event(@guard_message)
+    while next_message = @events_queue.next_event(@guard_message)
+      event_handler = EVENT_HANDLERS[next_message.kind]
+      event         = event_handler.new @client_pool, @follow_registry
 
-        event_handler = EVENT_HANDLERS[next_message.kind]
+      event.process next_message
 
-        event = event_handler.new @client_pool, @follow_registry
-
-        event.process next_message
-
-        @guard_message = next_message
-        @events_queue.remove next_message
-      end
+      @guard_message = next_message
+      @events_queue.remove next_message
     end
 
     socket.close
@@ -65,7 +62,7 @@ class Server
 
       @client_pool.add user_id, socket
 
-      puts("User connected: #{user_id} (#{@client_pool.size} total)")
+      puts "User connected: #{user_id} (#{@client_pool.size} total)"
     end
   end
 end

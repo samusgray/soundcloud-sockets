@@ -6,8 +6,6 @@ APP_CONFIG = YAML.load(
   File.open('config/app.yml').read
 )
 
-puts APP_CONFIG
-
 require_relative 'server'
 require_relative 'message'
 require_relative 'events/broadcast'

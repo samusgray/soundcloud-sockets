@@ -1,10 +1,10 @@
 class ClientPool
   def initialize events_queue
-    @events_queue = events_queue
+    @events_queue      = events_queue
     @connected_clients = {}
   end
 
-  def add(client_id, socket)
+  def add client_id, socket
     @connected_clients[client_id] = socket
   end
 
@@ -12,9 +12,10 @@ class ClientPool
     @connected_clients.keys.length
   end
 
-  def notify(client_id, message)
+  def notify client_id, message
     if !@connected_clients.has_key? client_id
-      @events_queue.add message
+      puts "ERROR: NO CLIENT"
+      # @events_queue.add message
     else
       begin
         @connected_clients[client_id].puts message.to_str
@@ -25,9 +26,9 @@ class ClientPool
     end
   end
 
-  def broadcast(message)
+  def broadcast message
     @connected_clients.keys.each do |key|
-      notify(key, message)
+      notify key, message
     end
   end
 end

@@ -1,6 +1,6 @@
 class Message
   def initialize payload
-    payload_parts = payload.split('|')
+    payload_parts = payload.split '|'
     # todo validations
 
     @raw      = payload
