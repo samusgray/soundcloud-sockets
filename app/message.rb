@@ -14,6 +14,10 @@ class Message
     @raw
   end
 
+  def <=>(message)
+    self.sequence <=> message.sequence
+  end
+
   def sequence
     @sequence.to_i
   end

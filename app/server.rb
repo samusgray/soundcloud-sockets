@@ -1,12 +1,14 @@
-require_relative 'events_queue'
+require_relative 'queues/events_queue'
+require_relative 'queues/dead_letter_queue'
+require_relative 'events/event_dispatcher'
 require_relative 'client_pool'
 
 class Server
   def initialize
     @follow_registry = {}
-    @guard_message   = Message.new '0|Guard'
     @events_queue    = EventsQueue.new
-    @client_pool     = ClientPool.new @events_queue
+    @dlq             = DLQ.new
+    @client_pool     = ClientPool.new @dlq
   end
 
   def self.run
@@ -36,20 +38,15 @@ class Server
     thread2.join
   end
 
+  private
+
   def event_thread socket
     socket.each_line do |payload|
       @events_queue.add Message.new payload
     end
 
-    while next_message = @events_queue.next_event(@guard_message)
-      event_handler = EVENT_HANDLERS[next_message.kind]
-      event         = event_handler.new @client_pool, @follow_registry
-
-      event.process next_message
-
-      @guard_message = next_message
-      @events_queue.remove next_message
-    end
+    dispatcher = EventDispatcher.new @events_queue, @client_pool, @follow_registry
+    dispatcher.run
 
     socket.close
   end

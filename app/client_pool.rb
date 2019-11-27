@@ -1,7 +1,8 @@
 class ClientPool
-  def initialize events_queue
-    @events_queue      = events_queue
+  def initialize dlq
+    @dlq               = dlq
     @connected_clients = {}
+    @dlq               = DLQ.new
   end
 
   def add client_id, socket
@@ -14,8 +15,7 @@ class ClientPool
 
   def notify client_id, message
     if !@connected_clients.has_key? client_id
-      puts "ERROR: NO CLIENT"
-      # @events_queue.add message
+      @dlq.add message
     else
       begin
         @connected_clients[client_id].puts message.to_str

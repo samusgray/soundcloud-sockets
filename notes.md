@@ -38,3 +38,4 @@ class User
     @followers.delete(user_id)
   end
 end
+}
