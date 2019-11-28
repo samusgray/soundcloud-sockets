@@ -1,9 +1,8 @@
-require_relative 'models/message'
 require_relative 'models/client_pool'
-require_relative 'models/event_dispatcher'
-
 require_relative 'queues/events_queue'
 require_relative 'queues/dead_letter_queue'
+require_relative 'servers/event_server'
+require_relative 'servers/client_server'
 
 class Server
   def initialize
@@ -20,59 +19,9 @@ class Server
   end
 
   def run
-    thread1 = Thread.new do
-      puts "Listening for events on #{::APP_CONFIG['EVENT_PORT']}"
-      client_server = TCPServer.open ::APP_CONFIG['EVENT_PORT']
-
-      loop do
-        Thread.fork(client_server.accept) { |socket| event_thread(socket) }
-      end
-    end
-
-    thread2 = Thread.new do
-      puts "Listening for client requests on #{::APP_CONFIG['CLIENT_PORT']}"
-      client_server = TCPServer.open ::APP_CONFIG['CLIENT_PORT']
-
-      loop do
-        Thread.fork(client_server.accept) { |socket| client_thread(socket) }
-      end
-    end
-
-    thread1.join
-    thread2.join
-  end
-
-  private
-
-  def event_thread socket
-    socket.each_line do |payload|
-      message = Message.new payload
-      if message.valid?
-        @events_queue.add message
-      else
-        @dlq.add message, :bad_message_format
-      end
-    end
-
-    dispatcher = EventDispatcher.new @events_queue, @client_pool, @follow_registry, @dlq
-    dispatcher.run
-
-    puts "Dead Letters Report:"
-    puts "==================="
-    puts JSON.pretty_generate(@dlq.report)
-
-    socket.close
-  end
-
-  def client_thread socket
-    user_id_string = socket.gets
-
-    if user_id_string
-      user_id = user_id_string.to_i
-
-      @client_pool.add user_id, socket
-
-      puts "User connected: #{user_id} (#{@client_pool.size} total)"
-    end
+    [
+      EventServer.new(@events_queue, @client_pool, @follow_registry, @dlq).run,
+      ClientServer.new(@client_pool).run
+    ].map(&:join)
   end
 end

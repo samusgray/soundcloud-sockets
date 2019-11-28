@@ -3,16 +3,17 @@ class ClientPool
   #
   # Params:
   # +dlq+:: [DeadLetterQueue] to store messages for unreachable clients
-  # +clients+:: +Hash+ object to store reference to all connected clients
+  # +clients+:: [Hash] object to store reference to all connected clients
 
   def initialize dlq
     @dlq = dlq
-
-    # Hash table to store client / socket references
     @clients = {}
   end
 
   # Add single client / socket pair to clients hash
+  #
+  # @param client_id [Int] the id of connected client
+  # @param socket [Socket] of connected client
   def add client_id, socket
     @clients[client_id] = socket
   end

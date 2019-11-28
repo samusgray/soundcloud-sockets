@@ -1,7 +1,6 @@
 require_relative 'base'
 
 module Event
-
   class Follow
     include Event::Base
 
