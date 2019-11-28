@@ -57,9 +57,9 @@ class Server
     dispatcher = EventDispatcher.new @events_queue, @client_pool, @follow_registry, @dlq
     dispatcher.run
 
-    puts "Dead Letters Counts:"
+    puts "Dead Letters Report:"
     puts "==================="
-    puts JSON.pretty_generate(@dlq.size)
+    puts JSON.pretty_generate(@dlq.report)
 
     socket.close
   end

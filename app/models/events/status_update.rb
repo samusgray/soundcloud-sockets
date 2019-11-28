@@ -4,6 +4,9 @@ module Event
   class StatusUpdate
     include Event::Base
 
+    # Notify all followers from @follow_registry
+    #
+    # @param message [Message] instance of Message to be processed
     def process message
       followers = @follow_registry[message.actor] || Set.new
 

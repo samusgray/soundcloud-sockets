@@ -4,6 +4,9 @@ module Event
   class Unfollow
     include Event::Base
 
+    # Remove follower and do not notify +message.target+
+    #
+    # @param message [Message] instance of Message to be processed
     def process message
       to_user_id = message.target
 
