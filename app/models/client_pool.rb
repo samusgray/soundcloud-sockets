@@ -6,7 +6,8 @@ class ClientPool
   # +clients+:: +Hash+ object to store reference to all connected clients
 
   def initialize dlq
-    @dlq     = dlq
+    @dlq = dlq
+
     # Hash table to store client / socket references
     @clients = {}
   end
@@ -29,7 +30,7 @@ class ClientPool
   # @param message [Message] the message to send
   def notify client_id, message
     if !@clients.has_key? client_id
-      @dlq.add message
+      @dlq.add message, :client_not_reachable
       @clients.delete client_id
     else
       @clients[client_id].puts message.to_str

@@ -1,41 +1,22 @@
-Research:
-- Ruby threads
-- Brief scala intro
 
-Ideas:
-  * cap and lower case of string matching
-  *
+Added some domain specific models to organize things in an extensible mannor.
+Incoming payloads are transformed into Message model instances. Messages have coresponding
+Events based on the message `kind`.
 
-
-Objects:
-
-* Message
-    payload: 666|F|60|50
-    sequence: 666
-    type: Follow
-    sender: 60
-    recipient: 50
+In order to add Events for new Message types, one adds an Event model in `models/events/`
+and adds the `kind` key to the `EventDispatcher`.
 
 
+TODO:
+  * RDOC all the classes
+  * Wrapp all the thingns in modules
+  * Validate message strings
+  * Specs for DLQ
 
+## Future posabilities and ideas
+* Profiling and optimization
+* Error handling issues from event stream
+  - Message with incorrect formatting
 
-
-class User
-  def initialize id
-    @id        = id
-    @followers = Set.new
-  end
-
-  attr_reader :id, :followers
-
-  def register_follower user_id
-    puts "register_follower"
-    puts user_id
-    @followers.add?(user_id)
-  end
-
-  def unregister_follower user_id
-    @followers.delete(user_id)
-  end
-end
-}
+* Refactor followers abstraction
+  - Possibly introduce a User abstraction using a Set for follower management

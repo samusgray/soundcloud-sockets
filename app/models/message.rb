@@ -20,7 +20,7 @@ class Message
   def initialize payload
     # Ignore message payloads that do not minimally
     # match '[sequence number]|[kind]' format.
-    return nil if VALID_REGEX.match(payload).nil?
+    @valid = VALID_REGEX.match(payload)
 
     payload_parts = payload.split '|'
 
@@ -36,6 +36,10 @@ class Message
   # @return [String] the string representation of payload.
   def to_str
     @raw
+  end
+
+  def valid?
+    !@valid.nil?
   end
 
   # Adds sorting functionality used by [DeadLetterQueue](app/queues/dead_letter_queue.rb)

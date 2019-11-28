@@ -5,7 +5,7 @@ module Event
     include Event::Base
 
     def process message
-      puts "Unregistered event: #{message.to_str}"
+      @dlq.add message, :unregistered_event
     end
   end
 end

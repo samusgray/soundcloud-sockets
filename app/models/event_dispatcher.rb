@@ -7,6 +7,15 @@ require_relative 'events/unfollow'
 require_relative 'events/unregistered'
 
 class EventDispatcher
+  # Routes messages to corespondig event handler. When a message kind
+  # does does not have a match in the EVENT_ROUTES then Event::Unregistered
+  # is used.
+  #
+  # Params:
+  # +events_queue+::    +[EventQueue]+     instance of EventQueue for queued messages
+  # +client_pool+::     +[ClientPool]+     instance of ClientPool to provide event handlers
+  # +follow_registry+:: +[FollowRefistry]+ instance of FollowRegistry to provide event handlers
+
   EVENT_HANDLERS = Hash.new(Event::Unregistered).merge(
     F: Event::Follow,
     U: Event::Unfollow,
@@ -15,17 +24,20 @@ class EventDispatcher
     S: Event::StatusUpdate,
   ).freeze
 
-  def initialize events_queue, client_pool, follow_registry
-    @events_queue    = events_queue
-    @client_pool     = client_pool
-    @follow_registry = follow_registry
+  def initialize events_queue, client_pool, follow_registry, dlq
+    @events_queue,
+    @client_pool,
+    @follow_registry,
+    @dlq = events_queue, client_pool, follow_registry, dlq
+
+    # Default message for first itteration
     @guard_message   = Message.new '0|Guard'
   end
 
   def run
     while next_message = @events_queue.next_event(@guard_message)
       event_handler = EVENT_HANDLERS[next_message.kind]
-      event         = event_handler.new @client_pool, @follow_registry
+      event         = event_handler.new @client_pool, @follow_registry, @dlq
 
       event.process next_message
 

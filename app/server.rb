@@ -46,11 +46,20 @@ class Server
 
   def event_thread socket
     socket.each_line do |payload|
-      @events_queue.add Message.new payload
+      message = Message.new payload
+      if message.valid?
+        @events_queue.add message
+      else
+        @dlq.add message, :bad_message_format
+      end
     end
 
-    dispatcher = EventDispatcher.new @events_queue, @client_pool, @follow_registry
+    dispatcher = EventDispatcher.new @events_queue, @client_pool, @follow_registry, @dlq
     dispatcher.run
+
+    puts "Dead Letters Counts:"
+    puts "==================="
+    puts JSON.pretty_generate(@dlq.size)
 
     socket.close
   end
