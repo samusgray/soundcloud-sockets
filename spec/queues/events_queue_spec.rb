@@ -46,7 +46,7 @@ describe 'EventsQueue' do
     end
   end
 
-  context '.next_message' do
+  context '.next_event' do
     it 'returns next message based on sequence number' do
       first  = Message.new '0|F|9|10'
       second = Message.new '1|F|9|10'
@@ -57,9 +57,9 @@ describe 'EventsQueue' do
       events_queue.add second
       events_queue.add third
 
-      result = events_queue.next_message second
+      result = events_queue.next_event second
 
-      expect(result.sequence).to be 1
+      expect(result.sequence).to be 2
     end
   end
 end
