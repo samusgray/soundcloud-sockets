@@ -1,6 +1,6 @@
 require 'spec_helper'
-require_relative '../../app/models/message'
-require_relative '../../app/services/queues/events_queue'
+require_relative '../../../app/models/message'
+require_relative '../../../app/services/queues/events_queue'
 
 describe 'EventsQueue' do
   context '.add' do
