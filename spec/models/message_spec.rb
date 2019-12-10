@@ -1,6 +1,6 @@
 require 'spec_helper'
-require_relative '../../app/models/message'
-require_relative '../../app/services/queues/dead_letter_queue'
+require_relative "#{ROOT_DIR}/app/models/message"
+require_relative "#{ROOT_DIR}/app/services/queues/dead_letter_queue"
 
 describe 'Message' do
   context '.valid?' do

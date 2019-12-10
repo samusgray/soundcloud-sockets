@@ -1,5 +1,5 @@
-require_relative '../models/message'
-require_relative '../services/event_dispatcher'
+require_relative "#{ROOT_DIR}/models/message"
+require_relative "#{ROOT_DIR}/services/event_dispatcher"
 
 class EventServer
   def initialize events_queue, client_pool, follow_registry, dlq
