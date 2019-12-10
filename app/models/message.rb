@@ -42,7 +42,7 @@ class Message
     !@valid.nil?
   end
 
-  # Adds sorting functionality used by [DeadLetterQueue](app/queues/dead_letter_queue.rb)
+  # Adds sorting functionality used by [DeadLetterQueue](app/services/queues/dead_letter_queue.rb)
   # to store failed message ordered by sequence number.
   #
   # @return [Bool] true or false comparing self with another message's sequence number.

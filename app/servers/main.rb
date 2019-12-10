@@ -1,8 +1,9 @@
-require_relative 'models/client_pool'
-require_relative 'queues/events_queue'
-require_relative 'queues/dead_letter_queue'
-require_relative 'servers/event_server'
-require_relative 'servers/client_server'
+require_relative '../models/client_pool'
+require_relative '../services/queues/events_queue'
+require_relative '../services/queues/dead_letter_queue'
+
+require_relative 'event_server'
+require_relative 'client_server'
 
 class Server
   def initialize

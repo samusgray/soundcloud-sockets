@@ -1,10 +1,10 @@
-require_relative 'message'
-require_relative 'events/broadcast'
-require_relative 'events/follow'
-require_relative 'events/private_message'
-require_relative 'events/status_update'
-require_relative 'events/unfollow'
-require_relative 'events/unregistered'
+require_relative '../models/message'
+require_relative '../models/events/broadcast'
+require_relative '../models/events/follow'
+require_relative '../models/events/private_message'
+require_relative '../models/events/status_update'
+require_relative '../models/events/unfollow'
+require_relative '../models/events/unregistered'
 
 class EventDispatcher
   # Routes messages to corresponding event handler. When a message kind

@@ -1,6 +1,6 @@
 require 'spec_helper'
 require_relative '../../app/models/message'
-require_relative '../../app/queues/dead_letter_queue'
+require_relative '../../app/services/queues/dead_letter_queue'
 
 describe 'DLQ' do
   context '.add' do
