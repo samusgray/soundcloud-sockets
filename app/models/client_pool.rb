@@ -10,6 +10,8 @@ class ClientPool
     @clients = {}
   end
 
+  attr_reader :dlq
+
   # Add single client / socket pair to clients hash
   #
   # @param client_id [Int] the id of connected client
