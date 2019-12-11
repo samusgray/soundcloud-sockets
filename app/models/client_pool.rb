@@ -31,9 +31,12 @@ class ClientPool
   # @param message [Message] the message to send
   def notify client_id, message
     if !@clients.has_key? client_id
+      App.log.warn "(#{message.to_str.chomp}) ⎇ added to DLQ"
+
       @dlq.add message, :client_not_reachable
       @clients.delete client_id
     else
+      App.log.info "(#{message.to_str.chomp}) ⌲⌲⌲⌲⌲⌲ Notification sent!", :green
       @clients[client_id].puts message.to_str
     end
   end

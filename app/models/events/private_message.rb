@@ -8,6 +8,8 @@ module Event
     #
     # @param message [Message] instance of Message to be processed
     def process message
+      App.log.info "(#{message.to_str.chomp}) → [PrivateMessage]: Sent from Client ID #{message.actor} to Client ID #{message.target}"
+
       @client_pool.notify message.target, message
     end
   end

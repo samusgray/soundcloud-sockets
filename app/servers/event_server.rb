@@ -10,8 +10,8 @@ class EventServer
   end
 
   def run
-   Thread.new do
-      puts "Listening for events on #{::APP_CONFIG['EVENT_PORT']}"
+    Thread.new do
+      App.log.info "Listening for events on #{::APP_CONFIG['EVENT_PORT']}", :green
       server = TCPServer.open ::APP_CONFIG['EVENT_PORT']
 
       loop do
@@ -32,7 +32,7 @@ class EventServer
       end
     end
 
-    dispatcher = EventDispatcher.new @events_queue, @client_pool, @follow_registry, @dlq
+    dispatcher = EventDispatcher.new @events_queue, @client_pool, @follow_registry
     dispatcher.run
 
     puts "Dead Letters Report:"

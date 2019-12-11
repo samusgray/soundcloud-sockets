@@ -16,11 +16,10 @@ class EventDispatcher
   # +client_pool+::     +[ClientPool]+     instance of ClientPool to provide event handlers
   # +follow_registry+:: +[FollowRefistry]+ instance of FollowRegistry to provide event handlers
 
-  def initialize events_queue, client_pool, follow_registry, dlq
+  def initialize events_queue, client_pool, follow_registry
     @events_queue,
     @client_pool,
-    @follow_registry,
-    @dlq = events_queue, client_pool, follow_registry, dlq
+    @follow_registry = events_queue, client_pool, follow_registry
 
     # Default message for first iteration
     @guard_message   = Message.new '0|Guard'
@@ -29,7 +28,7 @@ class EventDispatcher
   def run
     while next_message = @events_queue.next_event(@guard_message)
       event_handler = EVENT_HANDLERS[next_message.kind]
-      event         = event_handler.new @client_pool, @follow_registry, @dlq
+      event         = event_handler.new @client_pool, @follow_registry
 
       event.process next_message
 

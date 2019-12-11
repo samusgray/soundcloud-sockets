@@ -5,7 +5,7 @@ class ClientServer
 
   def run
     Thread.new do
-      puts "Listening for client requests on #{::APP_CONFIG['CLIENT_PORT']}"
+      App.log.info "Listening for client requests on #{::APP_CONFIG['CLIENT_PORT']}", :green
       server = TCPServer.open ::APP_CONFIG['CLIENT_PORT']
 
       loop do

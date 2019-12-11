@@ -8,7 +8,9 @@ module Event
     #
     # @param message [Message] instance of Message to be added to DLQ
     def process message
-      @dlq.add message, :unregistered_event
+      App.log.warn "(#{message.to_str.chomp}) ⎇ [Unregistered]: event added to DLQ"
+
+      @client_pool.dlq.add message, :unregistered_event
     end
   end
 end

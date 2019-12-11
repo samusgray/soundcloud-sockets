@@ -1,7 +1,7 @@
 module Event
   module Base
-    def initialize client_pool, follow_registry, dlq
-      @client_pool, @follow_registry, @dlq = client_pool, follow_registry, dlq
+    def initialize client_pool, follow_registry
+      @client_pool, @follow_registry = client_pool, follow_registry
     end
 
     def process message
