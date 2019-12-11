@@ -4,10 +4,10 @@ class ClientServer
   end
 
   def run
-    Thread.new do
-      App.log.info "Listening for client requests on #{::APP_CONFIG['CLIENT_PORT']}", :green
-      server = TCPServer.open ::APP_CONFIG['CLIENT_PORT']
+    App.log.info "Listening for client requests on #{::APP_CONFIG['CLIENT_PORT']}", :green
+    server = TCPServer.open ::APP_CONFIG['CLIENT_PORT']
 
+    Thread.new do
       loop do
         Thread.fork(server.accept) { |socket| socket_handler(socket) }
       end

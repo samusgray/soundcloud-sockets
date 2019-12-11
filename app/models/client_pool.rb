@@ -3,7 +3,6 @@ class ClientPool
   #
   # Params:
   # +dlq+:: [DeadLetterQueue] to store messages for unreachable clients
-  # +clients+:: [Hash] object to store reference to all connected clients
 
   def initialize dlq
     @dlq = dlq
@@ -33,12 +32,12 @@ class ClientPool
   # @param message [Message] the message to send
   def notify client_id, message
     if !@clients.has_key? client_id
-      App.log.warn "(#{message.to_str.chomp}) ⎇ added to DLQ"
+      App.log.warn "(#{message.to_str.chomp}) ⎇ [Client not reachable] added to DLQ"
 
       @dlq.add message, :client_not_reachable
       @clients.delete client_id
     else
-      App.log.info "(#{message.to_str.chomp}) ⌲⌲⌲⌲⌲⌲ Notification sent!", :green
+      App.log.info "(#{message.to_str.chomp}) ► [Notify] Success!", :green
       @clients[client_id].puts message.to_str
     end
   end

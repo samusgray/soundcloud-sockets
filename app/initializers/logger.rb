@@ -13,6 +13,10 @@ class AppLogger
     @logger.info c color, string
   end
 
+  def debug string, color = :blue
+    @logger.debug c color, string
+  end
+
   private
 
   def c( color, text = nil )

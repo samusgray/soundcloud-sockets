@@ -10,10 +10,10 @@ class EventServer
   end
 
   def run
-    Thread.new do
-      App.log.info "Listening for events on #{::APP_CONFIG['EVENT_PORT']}", :green
-      server = TCPServer.open ::APP_CONFIG['EVENT_PORT']
+    App.log.info "Listening for events on #{::APP_CONFIG['EVENT_PORT']}", :green
+    server = TCPServer.open ::APP_CONFIG['EVENT_PORT']
 
+    Thread.new do
       loop do
         Thread.fork(server.accept) { |socket| socket_handler(socket) }
       end
@@ -24,10 +24,15 @@ class EventServer
 
   def socket_handler socket
     socket.each_line do |payload|
+      App.log.debug "<incoming payload>: #{payload.chomp}"
+
       message = Message.new payload
+
       if message.valid?
+        App.log.debug "<adding valid message to events_queue>: #{payload.chomp}"
         @events_queue.add message
       else
+        App.log.warn "(#{message.to_str.chomp}) ⎇ [Bad Format]: event added to DLQ"
         @dlq.add message, :bad_message_format
       end
     end
