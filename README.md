@@ -1,4 +1,6 @@
-# Follower Maze Challenge!
+# Follower Maze Challenge
+
+See INSTRUCTIONS.MD for context.
 
 ## Setup
 
@@ -39,9 +41,6 @@ I added a few other domain specific models to organize things. I tried to make t
 
 As an applicant for the fullstack role, I really hope this illustrates some of my backend abilities and I really, really hope I have the opportunity to show you all what I can do in the browser! I don't love the `EventServer` and `ClientServer` models (yo dog I heard you like servers lol); I'd really like to see a single socket / server abstraction that can handle incoming socket connections and packets for broader use cases.
 
-#### Small note
-I removed my git history per the request for anonymity. I would prefer to read code like this commit by commit, but I thought t remove it here because, yeah.
-
 ## Future possibilities and ideas
 
 Given more time I'd refactor the follower / following mechanics, possibly introduce a User model to
@@ -55,12 +54,8 @@ In order to retry sending each payload later we'd need to store them somewhere o
 
 I had a ton of fun working on this. I wasn't so familiar with the domain and thus did not test drive my solution. I circled back to add tests, hoping to at least show some of my testing practices for unit tests. Besides better test coverage, here's what I'd consider working on if I spend more time on it:
 
-### Top ideas for consideration
+### Top ideas for future consideration
 * Profiling and optimization
 * Refactor followers abstraction
   - Possibly introduce a User abstraction using a Set for follower management
 * Improve client and event server abstractions with more a flexible, single class
-
-# Thanks reviewer!
-
-Thank you for taking the time to read my project! https://www.youtube.com/watch?v=zkBMpngSy3Y
